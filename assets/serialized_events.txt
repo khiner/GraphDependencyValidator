@@ -1,0 +1,11 @@
+{"type":"A",	"id":1,	"name":"apple"}
+{"type":"A",	"id":2,	"name":"banana"}
+{"type":"B",	"id":1,	"parent":[{	"type":"A",	"id":1	}],"name":"volvo"}
+{"type":"B",	"id":2,	"parent":[{	"type":"A",	"id":2	}],	"name":"audi"}
+{"type":"C",	"id":1,	"parent":[{	"type":"A",	"id":1	}],"name":"soccer"}
+{"type":"C",	"id":2,	"parent":[{	"type":"A",	"id":2	}],"name":"football"}
+{"type":"D",	"id":1,	"parent":[{	"type":"B",	"id":2	},	{"type":"C","id":1}], "name":"squirrels"}
+{"type":"D",	"id":2,	"parent":[{	"type":"B",	"id":1	},	{"type":"C","id":2}], "name":"chipmunk"}
+{"type":"E",	"id":1,	"name":"plane"}
+{"type":"E",	"id":2,	"name":"train"}
+{"type":"F",	"id":8,	"parent":[{	"type":"B",	"id":1}],	"name":"squid"}
