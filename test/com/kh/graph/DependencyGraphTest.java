@@ -9,7 +9,7 @@ import static org.junit.Assert.assertTrue;
 public class DependencyGraphTest {
 
     @Test
-    public void dependenciesSatisfied() throws DependentNotFoundException {
+    public void dependenciesSatisfied() throws DependentNotFoundException, InvalidDependencyException {
         final DependencyGraph dependencyGraph = createTestDependencyGraph();
 
 
@@ -22,7 +22,7 @@ public class DependencyGraphTest {
     }
 
     @Test
-    public void dependenciesNotSatisfied() throws DependentNotFoundException {
+    public void dependenciesNotSatisfied() throws DependentNotFoundException, InvalidDependencyException {
         final DependencyGraph dependencyGraph = createTestDependencyGraph();
 
         assertFalse(dependencyGraph.satisfiesDependencies('C', new char[] {'B'}));
@@ -34,7 +34,7 @@ public class DependencyGraphTest {
     @Test
     // Parents not satisfying all dependencies will fail validation,
     // but parents satisfying too many dependencies is ok
-    public void dependenciesOversatisfied() throws DependentNotFoundException {
+    public void dependenciesOversatisfied() throws DependentNotFoundException, InvalidDependencyException {
         final DependencyGraph dependencyGraph = createTestDependencyGraph();
 
         assertTrue(dependencyGraph.satisfiesDependencies('A', new char[] {'B'}));
@@ -45,13 +45,18 @@ public class DependencyGraphTest {
     }
 
     @Test(expected = DependentNotFoundException.class)
-    public void throwsNodeNotFoundException() throws DependentNotFoundException {
+    public void throwsNodeNotFoundException() throws DependentNotFoundException, InvalidDependencyException {
         final DependencyGraph dependencyGraph = createTestDependencyGraph();
 
         dependencyGraph.satisfiesDependencies('Z', null);
     }
 
-    private static DependencyGraph createTestDependencyGraph() {
+    @Test(expected = InvalidDependencyException.class)
+    public void throwsInvalidDependencyException() throws DependentNotFoundException, InvalidDependencyException {
+        new DependencyGraph().addDependencies('a');
+    }
+
+    private static DependencyGraph createTestDependencyGraph() throws InvalidDependencyException {
         return new DependencyGraph()
                 .addDependencies('A')
                 .addDependencies('B', 'A')

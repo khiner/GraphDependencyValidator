@@ -1,6 +1,7 @@
 package com.kh.event;
 
 import com.kh.graph.DependencyGraph;
+import com.kh.graph.InvalidDependencyException;
 import org.junit.Test;
 
 import java.util.HashSet;
@@ -12,7 +13,7 @@ import static org.junit.Assert.assertTrue;
 public class EventDependencyValidatorTest {
 
     @Test
-    public void validatesEventsCorrectly() {
+    public void validatesEventsCorrectly() throws InvalidDependencyException {
         final DependencyGraph dependencyGraph = createTestDependencyGraph();
         final Set<Event> validEvents = new HashSet<>();
         final Set<Event> invalidEvents = new HashSet<>();
@@ -73,7 +74,7 @@ public class EventDependencyValidatorTest {
         assertTrue(validEvents.contains(new Event(1, 'F')));
     }
 
-    private static DependencyGraph createTestDependencyGraph() {
+    private static DependencyGraph createTestDependencyGraph() throws InvalidDependencyException {
         return new DependencyGraph()
                 .addDependencies('A')
                 .addDependencies('B', 'A')

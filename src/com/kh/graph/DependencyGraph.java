@@ -21,11 +21,14 @@ public class DependencyGraph {
      *
      * Returns self for chaining.
      */
-    public DependencyGraph addDependencies(final char dependent, final char ... dependencies) {
+    public DependencyGraph addDependencies(final char dependent, final char ... dependencies) throws InvalidDependencyException {
+        validateCharacterValue(dependent);
+
         final int dependentArrayIndex = characterToArrayIndex(dependent);
 
         dependentPresent[dependentArrayIndex] = true;
         for (char dependency : dependencies) {
+            validateCharacterValue(dependency);
             dependencyMatrix[dependentArrayIndex][characterToArrayIndex(dependency)] = true;
         }
 
@@ -35,7 +38,9 @@ public class DependencyGraph {
     /**
      * Returns true if 'parents' contains *all* dependencies of 'dependent'
      */
-    public boolean satisfiesDependencies(final char dependent, final char[] parents) throws DependentNotFoundException {
+    public boolean satisfiesDependencies(final char dependent, final char[] parents) throws InvalidDependencyException, DependentNotFoundException {
+        validateCharacterValue(dependent);
+
         final int dependentIndex = characterToArrayIndex(dependent);
 
         if (!dependentPresent[dependentIndex]) {
@@ -52,7 +57,13 @@ public class DependencyGraph {
         return true;
     }
 
-    private int characterToArrayIndex(final char character) {
+    private static void validateCharacterValue(final char value) throws InvalidDependencyException {
+        if (value < 'A' || value > 'Z') {
+            throw new InvalidDependencyException(value);
+        }
+    }
+
+    private static int characterToArrayIndex(final char character) {
         return character - 'A';
     }
 

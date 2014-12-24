@@ -2,6 +2,7 @@ package com.kh.event;
 
 import com.kh.graph.DependencyGraph;
 import com.kh.graph.DependentNotFoundException;
+import com.kh.graph.InvalidDependencyException;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -40,7 +41,7 @@ public class EventDependencyValidator implements EventStreamParserListener {
             // *and* all type-dependencies must be satisfied
             return (null == parents || events.containsAll(parents)) &&
                     typeDependencyGraph.satisfiesDependencies(event.getType(), collectTypes(parents));
-        } catch (DependentNotFoundException e) {
+        } catch (InvalidDependencyException | DependentNotFoundException e) {
             return false;
         }
     }

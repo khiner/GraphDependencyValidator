@@ -7,20 +7,21 @@ import com.kh.event.EventDependencyValidatorListener;
 import com.kh.event.EventStream;
 import com.kh.event.EventStreamParser;
 import com.kh.graph.DependencyGraph;
+import com.kh.graph.InvalidDependencyException;
 
 import java.io.IOException;
 
 public class Main {
 
     public static void main(String[] args) {
-        final DependencyGraph dependencyGraph =
-                new DependencyGraph()
-                        .addDependencies('A')
-                        .addDependencies('B', 'A')
-                        .addDependencies('C', 'A')
-                        .addDependencies('D', 'B', 'C')
-                        .addDependencies('E')
-                        .addDependencies('F', 'B');
+        DependencyGraph dependencyGraph;
+
+        try {
+            dependencyGraph = createDependencyGraph();
+        } catch (InvalidDependencyException e) {
+            e.printStackTrace(); // should never happen - only thrown when non-capital-letters added
+            return;
+        }
 
         final EventDependencyValidatorListener validatorListener = new EventDependencyValidatorListener() {
             @Override
@@ -43,5 +44,15 @@ public class Main {
             System.out.println("Error parsing event stream:");
             e.printStackTrace();
         }
+    }
+
+    private static DependencyGraph createDependencyGraph() throws InvalidDependencyException {
+        return new DependencyGraph()
+                .addDependencies('A')
+                .addDependencies('B', 'A')
+                .addDependencies('C', 'A')
+                .addDependencies('D', 'B', 'C')
+                .addDependencies('E')
+                .addDependencies('F', 'B');
     }
 }
