@@ -1,5 +1,6 @@
 package com.kh.graph;
 
+import com.google.common.collect.Sets;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -11,22 +12,23 @@ public class DependencyGraphTest {
     public void dependenciesSatisfied() throws NodeNotFoundException {
         final DependencyGraph<Character> dependencyGraph = createDependencyGraph();
 
-        assertTrue(dependencyGraph.satisfiesDependencies('A', new Character[]{}));
-        assertTrue(dependencyGraph.satisfiesDependencies('B', new Character[]{'A'}));
-        assertTrue(dependencyGraph.satisfiesDependencies('C', new Character[]{'A'}));
-        assertTrue(dependencyGraph.satisfiesDependencies('D', new Character[]{'B', 'C'}));
-        assertTrue(dependencyGraph.satisfiesDependencies('E', new Character[]{}));
-        assertTrue(dependencyGraph.satisfiesDependencies('F', new Character[]{'B'}));
+
+        assertTrue(dependencyGraph.satisfiesDependencies('A', null));
+        assertTrue(dependencyGraph.satisfiesDependencies('B', Sets.newHashSet('A')));
+        assertTrue(dependencyGraph.satisfiesDependencies('C', Sets.newHashSet('A')));
+        assertTrue(dependencyGraph.satisfiesDependencies('D', Sets.newHashSet('B', 'C')));
+        assertTrue(dependencyGraph.satisfiesDependencies('E', null));
+        assertTrue(dependencyGraph.satisfiesDependencies('F', Sets.newHashSet('B')));
     }
 
     @Test
     public void dependenciesNotSatisfied() throws NodeNotFoundException {
         final DependencyGraph<Character> dependencyGraph = createDependencyGraph();
 
-        assertFalse(dependencyGraph.satisfiesDependencies('C', new Character[]{'B'}));
-        assertFalse(dependencyGraph.satisfiesDependencies('D', new Character[]{}));
-        assertFalse(dependencyGraph.satisfiesDependencies('D', new Character[]{'B'}));
-        assertFalse(dependencyGraph.satisfiesDependencies('F', new Character[]{'A'}));
+        assertFalse(dependencyGraph.satisfiesDependencies('C', Sets.newHashSet('B')));
+        assertFalse(dependencyGraph.satisfiesDependencies('D', null));
+        assertFalse(dependencyGraph.satisfiesDependencies('D', Sets.newHashSet('B')));
+        assertFalse(dependencyGraph.satisfiesDependencies('F', Sets.newHashSet('A')));
     }
 
     @Test
@@ -35,18 +37,18 @@ public class DependencyGraphTest {
     public void dependenciesOversatisfied() throws NodeNotFoundException {
         final DependencyGraph<Character> dependencyGraph = createDependencyGraph();
 
-        assertTrue(dependencyGraph.satisfiesDependencies('A', new Character[]{'B'}));
-        assertTrue(dependencyGraph.satisfiesDependencies('B', new Character[]{'A', 'B'}));
-        assertTrue(dependencyGraph.satisfiesDependencies('C', new Character[]{'A', 'B', 'C'}));
-        assertTrue(dependencyGraph.satisfiesDependencies('E', new Character[]{'E'}));
-        assertTrue(dependencyGraph.satisfiesDependencies('F', new Character[]{'B', 'C', 'D'}));
+        assertTrue(dependencyGraph.satisfiesDependencies('A', Sets.newHashSet('B')));
+        assertTrue(dependencyGraph.satisfiesDependencies('B', Sets.newHashSet('A', 'B')));
+        assertTrue(dependencyGraph.satisfiesDependencies('C', Sets.newHashSet('A', 'B', 'C')));
+        assertTrue(dependencyGraph.satisfiesDependencies('E', Sets.newHashSet('E')));
+        assertTrue(dependencyGraph.satisfiesDependencies('F', Sets.newHashSet('B', 'C', 'D')));
     }
 
     @Test(expected = NodeNotFoundException.class)
     public void throwsNodeNotFoundException() throws NodeNotFoundException {
         final DependencyGraph<Character> dependencyGraph = createDependencyGraph();
 
-        dependencyGraph.satisfiesDependencies('Z', new Character[]{});
+        dependencyGraph.satisfiesDependencies('Z', null);
     }
 
     private static DependencyGraph<Character> createDependencyGraph() {

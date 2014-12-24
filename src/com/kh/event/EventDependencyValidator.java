@@ -3,7 +3,12 @@ package com.kh.event;
 import com.kh.graph.DependencyGraph;
 import com.kh.graph.NodeNotFoundException;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * Listens to an EventStreamParser for parsed events and validates each new event satisfies two properties:
@@ -42,18 +47,15 @@ public class EventDependencyValidator implements EventStreamParserListener {
         }
     }
 
-    // collects all type from given events into an array
-    // (could strictly be a Set of Characters, but an array is more lightweight)
-    private Character[] collectTypes(final Collection<Event> events) {
-        if (null == events) {
-            return new Character[0];
-        }
+    // collects all type from given events into a set
+    private Set<Character> collectTypes(final Collection<Event> events) {
+        final Set<Character> types = new HashSet<>();
+        if (null == events)
+            return types;
 
-        final Character[] types = new Character[events.size()];
         final Iterator<Event> eventIterator = events.iterator();
-
-        for (int i = 0; i < events.size(); i++) {
-            types[i] = eventIterator.next().getType();
+        while (eventIterator.hasNext()) {
+            types.add(eventIterator.next().getType());
         }
 
         return types;

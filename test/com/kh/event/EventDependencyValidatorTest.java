@@ -13,7 +13,7 @@ public class EventDependencyValidatorTest {
 
     @Test
     public void validatesEventsCorrectly() {
-        final DependencyGraph dependencyGraph = createDependencyGraph();
+        final DependencyGraph<Character> dependencyGraph = createDependencyGraph();
         final Set<Event> validEvents = new HashSet<>();
         final Set<Event> invalidEvents = new HashSet<>();
 
@@ -73,7 +73,7 @@ public class EventDependencyValidatorTest {
         assertTrue(validEvents.contains(new Event(1, 'F')));
     }
 
-    private static DependencyGraph createDependencyGraph() {
+    private static DependencyGraph<Character> createDependencyGraph() {
         final DependencyGraph<Character> dependencyGraph = new DependencyGraph<>();
 
         dependencyGraph.addDependencies('A');

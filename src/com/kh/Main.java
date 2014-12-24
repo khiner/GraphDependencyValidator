@@ -1,7 +1,11 @@
 package com.kh;
 
 import com.google.gson.JsonSyntaxException;
-import com.kh.event.*;
+import com.kh.event.Event;
+import com.kh.event.EventDependencyValidator;
+import com.kh.event.EventDependencyValidatorListener;
+import com.kh.event.EventStream;
+import com.kh.event.EventStreamParser;
 import com.kh.graph.DependencyGraph;
 
 import java.io.IOException;
@@ -9,13 +13,14 @@ import java.io.IOException;
 public class Main {
 
     public static void main(String[] args) {
-        final DependencyGraph<Character> dependencyGraph = new DependencyGraph<>();
-        dependencyGraph.addDependencies('A');
-        dependencyGraph.addDependencies('B', 'A');
-        dependencyGraph.addDependencies('C', 'A');
-        dependencyGraph.addDependencies('D', 'B', 'C');
-        dependencyGraph.addDependencies('E');
-        dependencyGraph.addDependencies('F', 'B');
+        final DependencyGraph<Character> dependencyGraph =
+                new DependencyGraph<Character>()
+                        .addDependencies('A')
+                        .addDependencies('B', 'A')
+                        .addDependencies('C', 'A')
+                        .addDependencies('D', 'B', 'C')
+                        .addDependencies('E')
+                        .addDependencies('F', 'B');
 
         final EventDependencyValidatorListener validatorListener = new EventDependencyValidatorListener() {
             @Override
