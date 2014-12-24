@@ -13,8 +13,8 @@ import java.io.IOException;
 public class Main {
 
     public static void main(String[] args) {
-        final DependencyGraph<Character> dependencyGraph =
-                new DependencyGraph<Character>()
+        final DependencyGraph dependencyGraph =
+                new DependencyGraph()
                         .addDependencies('A')
                         .addDependencies('B', 'A')
                         .addDependencies('C', 'A')

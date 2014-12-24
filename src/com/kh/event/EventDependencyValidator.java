@@ -1,14 +1,12 @@
 package com.kh.event;
 
 import com.kh.graph.DependencyGraph;
-import com.kh.graph.NodeNotFoundException;
+import com.kh.graph.DependentNotFoundException;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Iterator;
 
 /**
  * Listens to an EventStreamParser for parsed events and validates each new event satisfies two properties:
@@ -18,9 +16,9 @@ import java.util.Iterator;
 public class EventDependencyValidator implements EventStreamParserListener {
     private final List<Event> events = new ArrayList<>();
     private final EventDependencyValidatorListener listener;
-    private final DependencyGraph<Character> typeDependencyGraph;
+    private final DependencyGraph typeDependencyGraph;
 
-    public EventDependencyValidator(final EventDependencyValidatorListener listener, final DependencyGraph<Character> dependencyGraph) {
+    public EventDependencyValidator(final EventDependencyValidatorListener listener, final DependencyGraph dependencyGraph) {
         this.listener = listener;
         this.typeDependencyGraph = dependencyGraph;
     }
@@ -42,20 +40,21 @@ public class EventDependencyValidator implements EventStreamParserListener {
             // *and* all type-dependencies must be satisfied
             return (null == parents || events.containsAll(parents)) &&
                     typeDependencyGraph.satisfiesDependencies(event.getType(), collectTypes(parents));
-        } catch (NodeNotFoundException e) {
+        } catch (DependentNotFoundException e) {
             return false;
         }
     }
 
     // collects all type from given events into a set
-    private Set<Character> collectTypes(final Collection<Event> events) {
-        final Set<Character> types = new HashSet<>();
-        if (null == events)
-            return types;
+    private char[] collectTypes(final Collection<Event> events) {
+        if (null == events) {
+            return new char[0];
+        }
 
+        final char[] types = new char[events.size()];
         final Iterator<Event> eventIterator = events.iterator();
-        while (eventIterator.hasNext()) {
-            types.add(eventIterator.next().getType());
+        for (int i = 0; i < events.size(); i++) {
+            types[i] = eventIterator.next().getType();
         }
 
         return types;

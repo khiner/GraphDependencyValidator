@@ -1,47 +1,71 @@
 package com.kh.graph;
 
-import com.google.common.collect.Sets;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Set;
-
 /**
  * For efficiency reasons, this is not actually implemented as a true graph.
- * It is specialized for unidirectional edge structure, where outgoing nodes go from 'dependents' to 'dependencies'
- * (It only tracks a 'outgoing' connections from objects to a set of other objects.)
+ * It is specialized for unidirectional edge structure of character nodes,
+ * where edges go from 'dependents' to 'dependencies'.
+ * (It only tracks 'outgoing' connections from characters to a set of other characters.)
  */
-public class DependencyGraph<T> {
-    private final HashMap<T, Set<T>> nodes = new HashMap<>();
+public class DependencyGraph {
+    private static final int NUM_CHARACTERS = 26;
+    private final boolean[] dependentPresent = new boolean[NUM_CHARACTERS]; // has the dependent ever been added?
+
+    // a matrix between two sets of characters, where a true value indicates a dependency
+    // from the row to the column (e.g. dependencyMatrix['A']['B'] == true indicates 'A' has a dependency on 'B')
+    private final boolean[][] dependencyMatrix = new boolean[NUM_CHARACTERS][NUM_CHARACTERS];
 
     /**
      * Create outgoing dependency edges from 'dependent' to all given 'dependencies'
      *
-     * 'dependent' will be added to the graph if it is not already present.
      * 'dependencies' can be empty (for nodes with no dependencies).
      *
      * Returns self for chaining.
      */
-    public DependencyGraph<T> addDependencies(final T dependent, final T... dependencies) {
-        if (nodes.containsKey(dependent)) {
-            final Set<T> currentDependencies = nodes.get(dependent);
-            Collections.addAll(currentDependencies, dependencies);
-        } else {
-            nodes.put(dependent, Sets.newHashSet(dependencies));
+    public DependencyGraph addDependencies(final char dependent, final char ... dependencies) {
+        final int dependentArrayIndex = characterToArrayIndex(dependent);
+
+        dependentPresent[dependentArrayIndex] = true;
+        for (char dependency : dependencies) {
+            dependencyMatrix[dependentArrayIndex][characterToArrayIndex(dependency)] = true;
         }
+
         return this;
     }
 
     /**
      * Returns true if 'parents' contains *all* dependencies of 'dependent'
      */
-    public boolean satisfiesDependencies(final T dependent, final Set<T> parents) throws NodeNotFoundException {
-        if (!nodes.containsKey(dependent)) {
+    public boolean satisfiesDependencies(final char dependent, final char[] parents) throws DependentNotFoundException {
+        final int dependentIndex = characterToArrayIndex(dependent);
+
+        if (!dependentPresent[dependentIndex]) {
             // can't really say dependencies are/aren't satisfied if dependent doesn't even exist
-            throw new NodeNotFoundException();
+            throw new DependentNotFoundException();
         }
 
-        return (null == parents && nodes.get(dependent).isEmpty()) ||
-                (null != parents && parents.containsAll(nodes.get(dependent)));
+        for (char dependency = 'A'; dependency <= 'Z'; dependency++) {
+            if (dependencyMatrix[dependentIndex][characterToArrayIndex(dependency)] && !contains(parents, dependency)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private int characterToArrayIndex(final char character) {
+        return character - 'A';
+    }
+
+    private static boolean contains(final char[] array, final char value) {
+        if (null == array) {
+            return false;
+        }
+
+        for (final char element : array) {
+            if (element == value) {
+                return true;
+            }
+        }
+        return false;
     }
 }

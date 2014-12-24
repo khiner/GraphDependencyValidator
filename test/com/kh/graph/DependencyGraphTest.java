@@ -9,58 +9,55 @@ import static org.junit.Assert.assertTrue;
 public class DependencyGraphTest {
 
     @Test
-    public void dependenciesSatisfied() throws NodeNotFoundException {
-        final DependencyGraph<Character> dependencyGraph = createDependencyGraph();
+    public void dependenciesSatisfied() throws DependentNotFoundException {
+        final DependencyGraph dependencyGraph = createTestDependencyGraph();
 
 
         assertTrue(dependencyGraph.satisfiesDependencies('A', null));
-        assertTrue(dependencyGraph.satisfiesDependencies('B', Sets.newHashSet('A')));
-        assertTrue(dependencyGraph.satisfiesDependencies('C', Sets.newHashSet('A')));
-        assertTrue(dependencyGraph.satisfiesDependencies('D', Sets.newHashSet('B', 'C')));
+        assertTrue(dependencyGraph.satisfiesDependencies('B', new char[] {'A'}));
+        assertTrue(dependencyGraph.satisfiesDependencies('C', new char[] {'A'}));
+        assertTrue(dependencyGraph.satisfiesDependencies('D', new char[] {'B', 'C'}));
         assertTrue(dependencyGraph.satisfiesDependencies('E', null));
-        assertTrue(dependencyGraph.satisfiesDependencies('F', Sets.newHashSet('B')));
+        assertTrue(dependencyGraph.satisfiesDependencies('F', new char[] {'B'}));
     }
 
     @Test
-    public void dependenciesNotSatisfied() throws NodeNotFoundException {
-        final DependencyGraph<Character> dependencyGraph = createDependencyGraph();
+    public void dependenciesNotSatisfied() throws DependentNotFoundException {
+        final DependencyGraph dependencyGraph = createTestDependencyGraph();
 
-        assertFalse(dependencyGraph.satisfiesDependencies('C', Sets.newHashSet('B')));
+        assertFalse(dependencyGraph.satisfiesDependencies('C', new char[] {'B'}));
         assertFalse(dependencyGraph.satisfiesDependencies('D', null));
-        assertFalse(dependencyGraph.satisfiesDependencies('D', Sets.newHashSet('B')));
-        assertFalse(dependencyGraph.satisfiesDependencies('F', Sets.newHashSet('A')));
+        assertFalse(dependencyGraph.satisfiesDependencies('D', new char[] {'B'}));
+        assertFalse(dependencyGraph.satisfiesDependencies('F', new char[] {'A'}));
     }
 
     @Test
     // Parents not satisfying all dependencies will fail validation,
     // but parents satisfying too many dependencies is ok
-    public void dependenciesOversatisfied() throws NodeNotFoundException {
-        final DependencyGraph<Character> dependencyGraph = createDependencyGraph();
+    public void dependenciesOversatisfied() throws DependentNotFoundException {
+        final DependencyGraph dependencyGraph = createTestDependencyGraph();
 
-        assertTrue(dependencyGraph.satisfiesDependencies('A', Sets.newHashSet('B')));
-        assertTrue(dependencyGraph.satisfiesDependencies('B', Sets.newHashSet('A', 'B')));
-        assertTrue(dependencyGraph.satisfiesDependencies('C', Sets.newHashSet('A', 'B', 'C')));
-        assertTrue(dependencyGraph.satisfiesDependencies('E', Sets.newHashSet('E')));
-        assertTrue(dependencyGraph.satisfiesDependencies('F', Sets.newHashSet('B', 'C', 'D')));
+        assertTrue(dependencyGraph.satisfiesDependencies('A', new char[] {'B'}));
+        assertTrue(dependencyGraph.satisfiesDependencies('B', new char[] {'A', 'B'}));
+        assertTrue(dependencyGraph.satisfiesDependencies('C', new char[] {'A', 'B', 'C'}));
+        assertTrue(dependencyGraph.satisfiesDependencies('E', new char[] {'E'}));
+        assertTrue(dependencyGraph.satisfiesDependencies('F', new char[] {'B', 'C', 'D'}));
     }
 
-    @Test(expected = NodeNotFoundException.class)
-    public void throwsNodeNotFoundException() throws NodeNotFoundException {
-        final DependencyGraph<Character> dependencyGraph = createDependencyGraph();
+    @Test(expected = DependentNotFoundException.class)
+    public void throwsNodeNotFoundException() throws DependentNotFoundException {
+        final DependencyGraph dependencyGraph = createTestDependencyGraph();
 
         dependencyGraph.satisfiesDependencies('Z', null);
     }
 
-    private static DependencyGraph<Character> createDependencyGraph() {
-        final DependencyGraph<Character> dependencyGraph = new DependencyGraph<>();
-
-        dependencyGraph.addDependencies('A');
-        dependencyGraph.addDependencies('B', 'A');
-        dependencyGraph.addDependencies('C', 'A');
-        dependencyGraph.addDependencies('D', 'B', 'C');
-        dependencyGraph.addDependencies('E');
-        dependencyGraph.addDependencies('F', 'B');
-
-        return dependencyGraph;
+    private static DependencyGraph createTestDependencyGraph() {
+        return new DependencyGraph()
+                .addDependencies('A')
+                .addDependencies('B', 'A')
+                .addDependencies('C', 'A')
+                .addDependencies('D', 'B', 'C')
+                .addDependencies('E')
+                .addDependencies('F', 'B');
     }
 }
