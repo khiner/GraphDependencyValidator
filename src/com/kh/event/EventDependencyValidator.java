@@ -40,24 +40,9 @@ public class EventDependencyValidator implements EventStreamParserListener {
             // previous valid events must contain all parents (with same type & id)
             // *and* all type-dependencies must be satisfied
             return (null == parents || events.containsAll(parents)) &&
-                    typeDependencyGraph.satisfiesDependencies(event.getType(), collectTypes(parents));
+                    typeDependencyGraph.satisfiesDependencies(event.getType(), event.getParentTypes());
         } catch (InvalidDependencyException | DependentNotFoundException e) {
             return false;
         }
-    }
-
-    // collects all type from given events into a set
-    private char[] collectTypes(final Collection<Event> events) {
-        if (null == events) {
-            return new char[0];
-        }
-
-        final char[] types = new char[events.size()];
-        final Iterator<Event> eventIterator = events.iterator();
-        for (int i = 0; i < events.size(); i++) {
-            types[i] = eventIterator.next().getType();
-        }
-
-        return types;
     }
 }

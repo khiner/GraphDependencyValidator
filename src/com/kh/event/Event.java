@@ -1,5 +1,6 @@
 package com.kh.event;
 
+import java.util.Iterator;
 import java.util.Set;
 
 public class Event {
@@ -7,17 +8,29 @@ public class Event {
     private final char type;
     private String name;
     private Set<Event> parent; // called 'parent' (singular) to match JSON structure
+    private char[] parentTypes; // copy types of all parents during instantiation for faster dependency analysis
 
     // This constructor is here to allow automatic JSON parsing of incomplete 'parent' event elements (with id/type)
     public Event(final int id, final char type) {
         this.id = id;
         this.type = type;
+        parentTypes = new char[0];
     }
 
     public Event(final int id, final char type, final String name, final Set<Event> parent) {
         this(id, type);
         this.name = name;
         this.parent = parent;
+
+        if (null == parent) {
+            parentTypes = new char[0];
+        } else {
+            parentTypes = new char[parent.size()];
+            final Iterator<Event> eventIterator = parent.iterator();
+            for (int i = 0; i < parent.size(); i++) {
+                parentTypes[i] = eventIterator.next().getType();
+            }
+        }
     }
 
     public int getId() {
@@ -34,6 +47,11 @@ public class Event {
 
     public Set<Event> getParents() {
         return parent;
+    }
+
+    // collects all type from given events into a set
+    public char[] getParentTypes() {
+        return parentTypes;
     }
 
     @Override
